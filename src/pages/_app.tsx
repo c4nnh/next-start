@@ -4,6 +4,7 @@ import { NextPage } from "next";
 import { Role } from "../types";
 import { PropsWithChildren, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
+import "../styles/global.css";
 
 type NextPageWithAuth<P = {}, IP = P> = NextPage<P, IP> & {
   roles?: Role[];
