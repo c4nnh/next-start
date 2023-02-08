@@ -1,10 +1,10 @@
+import { NextPage } from "next";
 import { SessionProvider, useSession } from "next-auth/react";
 import type { AppProps as NAppProps } from "next/app";
-import { NextPage } from "next";
-import { Role } from "../types";
-import { PropsWithChildren, useEffect, useMemo } from "react";
 import { useRouter } from "next/router";
+import { PropsWithChildren, useEffect, useMemo } from "react";
 import "../styles/global.css";
+import { Role } from "../types";
 
 type NextPageWithAuth<P = {}, IP = P> = NextPage<P, IP> & {
   roles?: Role[];
@@ -20,9 +20,13 @@ export default function MyApp({
 }: AppProps) {
   return (
     <SessionProvider session={session}>
-      <Auth roles={Component.roles}>
+      {(Component.roles || []).length ? (
+        <Auth roles={Component.roles}>
+          <Component {...pageProps} />
+        </Auth>
+      ) : (
         <Component {...pageProps} />
-      </Auth>
+      )}
     </SessionProvider>
   );
 }
@@ -32,10 +36,8 @@ const Auth: React.FC<
     roles?: Role[];
   }
 > = ({ children, roles }) => {
-  const { data: session, status } = useSession();
-  const isUser = !!session?.user;
-
   const router = useRouter();
+  const { data: session, status } = useSession();
 
   const isAuthorized = useMemo(() => {
     if (!roles || !roles.length) {
@@ -50,20 +52,16 @@ const Auth: React.FC<
   useEffect(() => {
     if (status === "loading") return;
 
-    if (!isUser && roles && roles?.length) {
-      router.push("/error/401");
-      return;
+    if (!session?.user) {
+      router.push("/auth/login");
     }
 
-    if (isUser && !isAuthorized) {
+    if (!isAuthorized) {
       router.push("/error/403");
-      return;
     }
-  }, [isAuthorized, isUser, roles, router, session, status]);
+  }, [isAuthorized, roles, router, session?.user, status]);
 
-  if (isUser || !roles || !roles.length) {
-    return <>{children}</>;
-  }
+  if (isAuthorized) return <>{children}</>;
 
-  return <div>Loading</div>;
+  return <div>loading</div>;
 };
