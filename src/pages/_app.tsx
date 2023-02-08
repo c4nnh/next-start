@@ -40,12 +40,10 @@ const Auth: React.FC<
   const { data: session, status } = useSession();
 
   const isAuthorized = useMemo(() => {
-    if (!roles || !roles.length) {
-      return true;
-    }
     if (!session?.user?.role) return false;
     return (
-      session?.user?.role === Role.ADMIN || roles.includes(session?.user?.role)
+      session?.user?.role === Role.ADMIN ||
+      (roles || [Role.ADMIN, Role.USER]).includes(session?.user?.role)
     );
   }, [session, roles]);
 
