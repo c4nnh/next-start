@@ -1,11 +1,14 @@
+import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import { Role } from '../../../types'
+import prisma from '../../server/db/client'
 
 export default NextAuth({
   callbacks: {
     session: async ({ session, token }) => {
-      session.user = token.user
+      if (token.user) {
+        session.user = token.user
+      }
       return session
     },
     jwt({ token, user }) {
@@ -19,6 +22,7 @@ export default NextAuth({
     strategy: 'jwt',
   },
   secret: 'sm',
+  adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -27,13 +31,14 @@ export default NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        const user = {
-          id: '1323',
-          name: 'J Smith',
-          email: 'jsmith@example.com',
-          role: Role.ADMIN,
-        }
-        return user
+        const data = await prisma.user.findFirst({
+          where: {
+            email: 'abcd',
+            password: 'abcd',
+          },
+        })
+
+        return data
       },
     }),
   ],
