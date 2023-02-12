@@ -15,14 +15,37 @@ enum Role {
   USER
 }
 
+// Necessary for Next auth
+model Account {
+  id String @id @default(uuid())
+
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User[]
+
+  @@unique([provider, providerAccountId])
+}
+
 model User {
   id String @id @default(uuid())
 
-  name String
-  email String @unique
-  password String
-  role Role @default(USER)
+  name          String
+  email         String    @unique
+  password      String?
+  emailVerified DateTime?
+  image         String?
+  role          Role      @default(USER)
 
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  account   Account? @relation(fields: [accountId], references: [id])
+  accountId String?
 }

@@ -1,5 +1,4 @@
 import { DefaultSession } from 'next-auth'
-import { Role } from '../src/types'
 
 type SessionUser = {
   id: string

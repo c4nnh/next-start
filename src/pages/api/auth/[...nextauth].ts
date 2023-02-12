@@ -1,11 +1,12 @@
+import prisma from '@/server/db/client'
 import { PrismaAdapter } from '@next-auth/prisma-adapter'
 import NextAuth from 'next-auth'
 import CredentialsProvider from 'next-auth/providers/credentials'
-import prisma from '../../server/db/client'
+import DiscordProvider from 'next-auth/providers/discord'
 
 export default NextAuth({
   callbacks: {
-    session: async ({ session, token }) => {
+    session({ session, token }) {
       if (token.user) {
         session.user = token.user
       }
@@ -27,19 +28,36 @@ export default NextAuth({
     CredentialsProvider({
       name: 'Credentials',
       credentials: {
-        username: { label: 'Username', type: 'text', placeholder: 'jsmith' },
+        email: {
+          label: 'Email',
+          type: 'text',
+          placeholder: 'someone@gmail.com',
+        },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials, req) {
+      async authorize(credentials) {
+        if (!credentials) return null
+        const { email, password } = credentials
         const data = await prisma.user.findFirst({
           where: {
-            email: 'abcd',
-            password: 'abcd',
+            email,
+            password,
+          },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            role: true,
+            image: true,
           },
         })
 
         return data
       },
+    }),
+    DiscordProvider({
+      clientId: process.env.DISCORD_CLIENT_ID,
+      clientSecret: process.env.DISCORD_CLIENT_SECRET,
     }),
   ],
   // pages: {

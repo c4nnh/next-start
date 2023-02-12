@@ -8,7 +8,7 @@ const Home: NextPage = () => {
   return (
     <AppLayout>
       <div className="text-red-500 font-bold text-3xl">
-        home page - {JSON.stringify(session)}
+        home page - {JSON.stringify(session?.user?.role)}
       </div>
     </AppLayout>
   )
