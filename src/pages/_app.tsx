@@ -58,7 +58,7 @@ const Auth: React.FC<
     }
 
     if (!isAuthorized) {
-      router.push('/error/403')
+      router.push('/403')
     }
   }, [isAuthorized, roles, router, session?.user, status])
 

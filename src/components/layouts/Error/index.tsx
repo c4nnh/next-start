@@ -1,18 +1,13 @@
-import { useSession } from 'next-auth/react'
 import { PropsWithChildren } from 'react'
 import styled from 'styled-components'
 import tw from 'twin.macro'
 import { Header } from '../components/Header'
-import { Sidebar } from './Sidebar'
 
-export const AppLayout: React.FC<PropsWithChildren> = ({ children }) => {
-  const { data: session } = useSession()
-
+export const ErrorLayout: React.FC<PropsWithChildren> = ({ children }) => {
   return (
     <Container>
       <Header />
       <Body>
-        {!!session?.user && <Sidebar />}
         <ChildrenContainer>{children}</ChildrenContainer>
       </Body>
     </Container>
