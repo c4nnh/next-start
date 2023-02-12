@@ -1,18 +1,19 @@
-import { NextPage } from "next";
-import { SessionProvider, useSession } from "next-auth/react";
-import type { AppProps as NAppProps } from "next/app";
-import { useRouter } from "next/router";
-import { PropsWithChildren, useEffect, useMemo } from "react";
-import "../styles/global.css";
-import { Role } from "../types";
+import { AppLayout } from '@/components/layouts/App'
+import '@/styles/global.css'
+import { Role } from '@/types'
+import { NextPage } from 'next'
+import { SessionProvider, useSession } from 'next-auth/react'
+import type { AppProps as NAppProps } from 'next/app'
+import { useRouter } from 'next/router'
+import { PropsWithChildren, useEffect, useMemo } from 'react'
 
 type NextPageWithAuth<P = {}, IP = P> = NextPage<P, IP> & {
-  roles?: Role[];
-};
+  roles?: Role[]
+}
 
-type AppProps = Omit<NAppProps, "Component"> & {
-  Component: NextPageWithAuth;
-};
+type AppProps = Omit<NAppProps, 'Component'> & {
+  Component: NextPageWithAuth
+}
 
 export default function MyApp({
   Component,
@@ -22,44 +23,46 @@ export default function MyApp({
     <SessionProvider session={session}>
       {(Component.roles || []).length ? (
         <Auth roles={Component.roles}>
-          <Component {...pageProps} />
+          <AppLayout>
+            <Component {...pageProps} />
+          </AppLayout>
         </Auth>
       ) : (
         <Component {...pageProps} />
       )}
     </SessionProvider>
-  );
+  )
 }
 
 const Auth: React.FC<
   PropsWithChildren & {
-    roles?: Role[];
+    roles?: Role[]
   }
 > = ({ children, roles }) => {
-  const router = useRouter();
-  const { data: session, status } = useSession();
+  const router = useRouter()
+  const { data: session, status } = useSession()
 
   const isAuthorized = useMemo(() => {
-    if (!session?.user?.role) return false;
+    if (!session?.user?.role) return false
     return (
       session?.user?.role === Role.ADMIN ||
       (roles || [Role.ADMIN, Role.USER]).includes(session?.user?.role)
-    );
-  }, [session, roles]);
+    )
+  }, [session, roles])
 
   useEffect(() => {
-    if (status === "loading") return;
+    if (status === 'loading') return
 
     if (!session?.user) {
-      router.push("/auth/login");
+      router.push('/auth/login')
     }
 
     if (!isAuthorized) {
-      router.push("/error/403");
+      router.push('/error/403')
     }
-  }, [isAuthorized, roles, router, session?.user, status]);
+  }, [isAuthorized, roles, router, session?.user, status])
 
-  if (isAuthorized) return <>{children}</>;
+  if (isAuthorized) return <>{children}</>
 
-  return <div>loading</div>;
-};
+  return <div>loading</div>
+}

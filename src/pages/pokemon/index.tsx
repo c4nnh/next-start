@@ -1,12 +1,9 @@
-import { useSession } from "next-auth/react";
-import { Role } from "../../types";
+import { Role } from '../../types'
 
 function Pokemons() {
-  const { data: session } = useSession();
-
-  return <div>pokemons{session?.user?.id}</div>;
+  return <div>pokemons</div>
 }
 
-Pokemons.roles = [Role.USER];
+Pokemons.roles = [Role.USER]
 
-export default Pokemons;
+export default Pokemons

@@ -18,6 +18,7 @@ export default NextAuth({
   session: {
     strategy: 'jwt',
   },
+  secret: 'sm',
   providers: [
     CredentialsProvider({
       name: 'Credentials',
@@ -25,7 +26,6 @@ export default NextAuth({
         username: { label: 'Username', type: 'text', placeholder: 'jsmith' },
         password: { label: 'Password', type: 'password' },
       },
-
       async authorize(credentials, req) {
         const user = {
           id: '1323',
@@ -33,7 +33,6 @@ export default NextAuth({
           email: 'jsmith@example.com',
           role: Role.ADMIN,
         }
-
         return user
       },
     }),
