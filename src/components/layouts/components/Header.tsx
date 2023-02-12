@@ -29,5 +29,5 @@ export const Header: React.FC = () => {
 }
 
 const Container = styled.div`
-  ${tw`bg-red-200 w-full h-10 flex justify-between`}
+  ${tw`bg-red-200 h-10 flex justify-between box-border px-5 py-2`}
 `

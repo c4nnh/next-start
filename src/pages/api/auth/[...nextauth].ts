@@ -22,7 +22,7 @@ export default NextAuth({
   session: {
     strategy: 'jwt',
   },
-  secret: 'sm',
+  secret: process.env.JWT_SECRET_KEY,
   adapter: PrismaAdapter(prisma),
   providers: [
     CredentialsProvider({
@@ -38,6 +38,7 @@ export default NextAuth({
       async authorize(credentials) {
         if (!credentials) return null
         const { email, password } = credentials
+
         const data = await prisma.user.findFirst({
           where: {
             email,
@@ -60,7 +61,7 @@ export default NextAuth({
       clientSecret: process.env.DISCORD_CLIENT_SECRET,
     }),
   ],
-  // pages: {
-  //   signIn: '/auth/login',
-  // },
+  pages: {
+    signIn: '/auth/login',
+  },
 })
